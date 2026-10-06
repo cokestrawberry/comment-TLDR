@@ -38,12 +38,21 @@ A block is one explanation, not one run of comment lines:
 
 A block of explanatory prose with 4 or more lines is a candidate. Skip:
 
-- API documentation that a documentation tool attaches to a declaration: docstrings, Javadoc,
-  JSDoc, Doxygen, Go doc comments, and the like.
+- Docstrings, such as Python's, at any visibility. They are string literals the program keeps at
+  runtime, and doctest runs the examples in them.
+- Doc comments on public API declarations: exported Go names, public or protected Java, Kotlin,
+  and C# members, exported JS and TS declarations, `pub` Rust items, and the like. When visibility
+  is unclear, as in C and C++, treat the declaration as public.
 - License and copyright headers.
 
-Leave TODO and FIXME notes, continuation lines included, exactly as they are. They do not count
-toward a block's length or the limits below.
+Doc comments on other declarations are ordinary comments.
+
+Leave the following exactly as they are. They do not count toward a block's length or the limits
+below:
+
+- TODO and FIXME notes, continuation lines included.
+- In doc comments: tag lines such as `@param`, `@return`, and `\param`, deprecation notices such as
+  Go's `Deprecated:` paragraph, and code examples.
 
 ## Rewrite each candidate
 
@@ -56,8 +65,9 @@ Sort the block's content into three kinds:
 
 Then rewrite it within these limits:
 
-- WHAT takes 1 line and WHY up to 3 lines, WHAT first.
+- WHAT takes at most 1 line and WHY at most 3 lines, WHAT first.
 - Each step takes 1 line, placed directly above the code for that step.
+- Drop a WHAT or step line that only restates the single statement directly below it.
 - Carry over only what the original comment says. Never add a WHAT, WHY, or step line it lacks: a
   comment without WHAT stays WHY-only, and steps it does not describe get no comments.
 - Drop whatever does not fit, without saving it to chat, docs, or commit messages. Keep
@@ -74,46 +84,79 @@ Keep each comment's language, comment syntax, and indentation.
 
 ## Line width
 
-- Use the line length the repository configures, such as `.editorconfig` `max_line_length`,
-  Prettier `printWidth`, Black or Ruff `line-length`, clang-format `ColumnLimit`, or rustfmt
-  `max_width`. Without one, use 100 columns.
+- Use the line length the repository's formatter or linter enforces, including a tool's default
+  when the repository runs it without configuring one. Without either, use 100 columns.
 - Count the whole line, including indentation and the comment marker.
 - Count a character whose Unicode East_Asian_Width is W or F, such as Hangul, as 2 columns.
 - When a summary does not fit, shorten the wording instead of wrapping onto another line.
 
-## Example
+## Examples
 
-Before:
+A comment inside a function body. Before:
 
 ```python
 def sync_index(cache):
     # Synchronize the local cache with the remote index.
-    # First fetch the full index from the server, then compare it with
-    # the local entries, and finally write only the entries that changed.
+    # First fetch the full index from the server and parse its entries,
+    # then find the entries that differ from the local ones, and finally
+    # write those entries back to the cache.
     #
     # The full index is fetched every time because the server sends no
     # ETag, so there is no way to ask for only the changes. Last-Modified
     # does not help either: the server sets it to the request time, so
     # conditional requests never hit. We settled on this in the March sync
     # review as the simplest option that works.
-    index = fetch_index()
-    changed = diff(index, cache.entries())
+    raw = http.get(INDEX_URL).json()
+    index = {e["id"]: Entry(e) for e in raw["entries"]}
+    changed = []
+    for entry in index.values():
+        if cache.get(entry.id) != entry:
+            changed.append(entry)
     cache.write(changed)
 ```
 
-After:
+After. The last step is dropped because `cache.write(changed)` already says it:
 
 ```python
 def sync_index(cache):
     # Sync the local cache with the remote index.
-    # The server sends no ETag and sets Last-Modified to the request time,
-    # so conditional requests never hit and the full index is fetched each time.
-    # Fetch the full index.
-    index = fetch_index()
-    # Compare it with the local entries.
-    changed = diff(index, cache.entries())
-    # Write only the changed entries.
+    # The server sends no ETag and sets Last-Modified to the request
+    # time, so conditional requests never hit and the full index is
+    # fetched every time.
+    # Fetch and parse the full index.
+    raw = http.get(INDEX_URL).json()
+    index = {e["id"]: Entry(e) for e in raw["entries"]}
+    # Find the entries that differ from the local ones.
+    changed = []
+    for entry in index.values():
+        if cache.get(entry.id) != entry:
+            changed.append(entry)
     cache.write(changed)
+```
+
+A doc comment on an unexported Go function. Before:
+
+```go
+// syncIndex synchronizes the local cache with the remote index.
+// The server sends no ETag, and Last-Modified is set to the request time,
+// so conditional requests never hit and the full index is fetched every
+// time. An earlier version polled the server's change feed, which was
+// removed in v2. We settled on this in the March sync review as the
+// simplest option.
+//
+// Deprecated: use syncIndexV2, which sends conditional requests.
+func syncIndex(c *Cache) error {
+```
+
+After. The same comment on an exported `SyncIndex` would stay untouched:
+
+```go
+// syncIndex synchronizes the local cache with the remote index.
+// The server sends no ETag and sets Last-Modified to the request time,
+// so conditional requests never hit and the full index is fetched every time.
+//
+// Deprecated: use syncIndexV2, which sends conditional requests.
+func syncIndex(c *Cache) error {
 ```
 
 ## Report
