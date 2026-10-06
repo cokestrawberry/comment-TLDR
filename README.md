@@ -1,36 +1,42 @@
 # comment-TLDR
 
-Rewrites overly long comment blocks into one WHAT line, up to three WHY lines, and one line above
-each step.
+Plugin for Claude Code and Codex that rewrites overly long comment blocks into one WHAT line, up
+to three WHY lines, and one line above each step.
 
 ## Install
 
-In a Claude Code session:
+### Claude Code
 
-```text
-/plugin marketplace add cokestrawberry/comment-TLDR
-/plugin install comment-tldr@comment-tldr
+```sh
+claude plugin marketplace add cokestrawberry/comment-TLDR
+claude plugin install comment-tldr@comment-tldr
 ```
 
-From a shell, `claude plugin marketplace add cokestrawberry/comment-TLDR` and
-`claude plugin install comment-tldr@comment-tldr` do the same. Auto-update is off for this
-marketplace by default, so update with `claude plugin update comment-tldr@comment-tldr`. The new
-version loads in your next session, or after `/reload-plugins` in a running one.
+In a Claude Code session, `/plugin marketplace add cokestrawberry/comment-TLDR` and
+`/plugin install comment-tldr@comment-tldr` do the same. Auto-update is off for this marketplace
+by default, so update with `claude plugin update comment-tldr@comment-tldr`. The new version loads
+in your next session, or after `/reload-plugins` in a running one.
 
-In Codex, from a shell:
+### Codex
 
 ```sh
 codex plugin marketplace add cokestrawberry/comment-TLDR
 codex plugin add comment-tldr@comment-tldr
 ```
 
-## Usage
+## How to use
+
+In Claude Code, run:
 
 ```text
 /comment-tldr [scope]
 ```
 
-In Codex, call it as `$comment-tldr:comment-tldr [scope]`.
+In Codex, run:
+
+```text
+$comment-tldr:comment-tldr [scope]
+```
 
 The scope decides which comments are rewritten:
 
