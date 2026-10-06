@@ -1,5 +1,5 @@
 ---
-name: comment-TLDR
+name: comment-tldr
 description: >-
   Rewrites overly long code comment blocks in a scope (paths, a git range, or a PR number; the
   whole repository when omitted) into short summaries that keep only the essential content.
