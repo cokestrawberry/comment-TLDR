@@ -17,9 +17,8 @@ Edit the files in place and change nothing but comments.
 Read `$ARGUMENTS` as one of the following, trying them in this order:
 
 1. **Empty**: every file tracked by git in the repository (`git ls-files`).
-2. **PR number** (`123` or `#123`): the lines the PR adds or changes (`gh pr diff <number>`). The
-   PR's head branch must be checked out; if `gh pr view <number> --json headRefName` differs from
-   the current branch, stop and tell the user.
+2. **PR number** (`123` or `#123`): the lines the PR adds or changes (`gh pr diff <number>`),
+   rewritten in a temporary worktree as described in [Work on a PR](#work-on-a-pr).
 3. **Path or glob**: every comment in the matching files.
 4. **Git range or commit** (`main..HEAD`, `a1b2c3d`): the lines it adds or changes
    (`git diff <range>`, or `git show <commit>` for a single commit).
@@ -117,3 +116,18 @@ def sync_index(cache):
 ## Report
 
 List each rewritten block as `path:line`. Do not quote the removed text.
+
+## Work on a PR
+
+Leave the current checkout as it is and work in a temporary worktree:
+
+1. Run `git fetch origin pull/<number>/head`, then
+   `git worktree add -b comment-tldr/pr-<number> .claude/worktrees/comment-tldr/pr-<number>
+   FETCH_HEAD`. If that branch or path already exists from an earlier run, stop and give its path.
+2. Rewrite comments inside that worktree only, then report as above.
+3. Ask the user whether to commit the changes and push them to the PR. The target is the
+   `headRefName` branch in the `headRepository` that `gh pr view <number> --json
+   headRefName,headRepository` returns.
+4. On yes, commit only the files this skill changed, with a message in the style of the
+   repository's recent commits, push, and remove the worktree and its branch. On no, or when the
+   push fails, keep the worktree and give its path.
