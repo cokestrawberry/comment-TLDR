@@ -14,7 +14,8 @@ Edit the files in place and change nothing but comments.
 
 ## Resolve the scope
 
-Read `$ARGUMENTS` as one of the following, trying them in this order:
+Read the scope the user gave when calling this skill as one of the following, trying them in this
+order:
 
 1. **Empty**: every file tracked by git in the repository (`git ls-files`).
 2. **Path or glob**: every comment in the matching files.

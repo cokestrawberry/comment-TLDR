@@ -17,11 +17,20 @@ From a shell, `claude plugin marketplace add cokestrawberry/comment-TLDR` and
 marketplace by default, so update with `claude plugin update comment-tldr@comment-tldr`. The new
 version loads in your next session, or after `/reload-plugins` in a running one.
 
+In Codex, from a shell:
+
+```sh
+codex plugin marketplace add cokestrawberry/comment-TLDR
+codex plugin add comment-tldr@comment-tldr
+```
+
 ## Usage
 
 ```text
 /comment-tldr [scope]
 ```
+
+In Codex, call it as `$comment-tldr:comment-tldr [scope]`.
 
 The scope decides which comments are rewritten:
 
