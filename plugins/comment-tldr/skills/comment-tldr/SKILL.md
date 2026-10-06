@@ -20,12 +20,17 @@ Read `$ARGUMENTS` as one of the following, trying them in this order:
 2. **PR number** (`123` or `#123`): the lines the PR adds or changes (`gh pr diff <number>`),
    rewritten in a temporary worktree as described in [Work on a PR](#work-on-a-pr).
 3. **Path or glob**: every comment in the matching files.
-4. **Git range or commit** (`main..HEAD`, `a1b2c3d`): the lines it adds or changes
-   (`git diff <range>`, or `git show <commit>` for a single commit).
+4. **Git range or commit** (`main...HEAD`, `a1b2c3d`): the lines it adds or changes. Compare a
+   range against its merge base with `git diff A...B` whether it is written with two or three
+   dots, as `gh pr diff` does; use `git show <commit>` for a single commit.
 
 If an argument resolves to none of these, stop and name it. For a diff-based scope, a block is in
 scope when any of its lines was added or changed; find it in the current file by its text, since
 line numbers in the diff may have moved.
+
+In every scope, skip generated files, such as those marked `// Code generated ... DO NOT EDIT.`,
+and directories of copied third-party code such as `vendor/`. Their comments come back the next
+time they are generated or copied.
 
 ## Find candidate blocks
 
@@ -36,23 +41,22 @@ A block is one explanation, not one run of comment lines:
 - A block that continues the previous block's explanation, instead of describing the code directly
   below it, belongs to that previous block even across code lines.
 
-A block of explanatory prose with 4 or more lines is a candidate. Skip:
+A block of explanatory prose with 4 or more lines is a candidate. Docstrings, such as Python's,
+are never candidates at any visibility: they are string literals the program keeps at runtime,
+and doctest runs the examples in them.
 
-- Docstrings, such as Python's, at any visibility. They are string literals the program keeps at
-  runtime, and doctest runs the examples in them.
+Leave the following exactly as they are. They do not count toward a block's length or the limits
+below, so the rest of a block they share is still rewritten:
+
+- License and copyright headers.
 - Doc comments on public API declarations: exported Go names, public or protected Java, Kotlin,
   and C# members, exported JS and TS declarations, `pub` Rust items, and the like. When visibility
   is unclear, as in C and C++, treat the declaration as public.
-- License and copyright headers.
-
-Doc comments on other declarations are ordinary comments.
-
-Leave the following exactly as they are. They do not count toward a block's length or the limits
-below:
-
 - TODO and FIXME notes, continuation lines included.
-- In doc comments: tag lines such as `@param`, `@return`, and `\param`, deprecation notices such as
-  Go's `Deprecated:` paragraph, and code examples.
+- In other doc comments: tag lines such as `@param`, `@return`, and `\param`, deprecation notices
+  such as Go's `Deprecated:` paragraph, and code examples.
+
+Apart from these, doc comments on other declarations are ordinary comments.
 
 ## Rewrite each candidate
 
@@ -167,7 +171,9 @@ List each rewritten block as `path:line`. Do not quote the removed text.
 
 Leave the current checkout as it is and work in a temporary worktree:
 
-1. Run `git fetch origin pull/<number>/head`, then
+1. Fetch the PR from the repository `gh` resolves it in (`gh repo view --json nameWithOwner,url`),
+   which is not `origin` in a fork's clone: `git fetch <remote> pull/<number>/head` with the remote
+   that points at that repository, or with its `url` when no remote does. Then run
    `git worktree add -b comment-tldr/pr-<number> .claude/worktrees/comment-tldr/pr-<number>
    FETCH_HEAD`. If that branch or path already exists from an earlier run, stop and give its path.
 2. Rewrite comments inside that worktree only, then report as above.
