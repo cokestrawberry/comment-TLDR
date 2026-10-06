@@ -60,3 +60,9 @@ without the plugin. Results are written to `plugins/comment-tldr/evals/results/`
 
 The cases do not cover the PR scope, which commits and pushes to a pull request: eval runs have no
 GitHub credentials.
+
+## Sponsor
+
+[![Sponsor](https://img.shields.io/badge/Sponsor-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/cokestrawberry)
+
+You can support comment-TLDR through GitHub Sponsors.
