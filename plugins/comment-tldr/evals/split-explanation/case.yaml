@@ -1,0 +1,39 @@
+schema_version: "1.1"
+name: split-explanation
+description: One explanation cut into chunks by blank lines is rewritten as one short block
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr rows.py
+graders:
+  # Five comment lines with only blank lines between them would still be one block over the limits.
+  - name: no-long-block
+    type: regex
+    pattern: '^(?:[ \t]*#[^\n]*\n(?:[ \t]*\n)*){5,}'
+    flags: m
+    match: not_contains
+    target:
+      source: file
+      path: rows.py
+  - name: keeps-constraint
+    type: regex
+    pattern: NUL
+    target:
+      source: file
+      path: rows.py
+  - name: drops-history
+    type: regex
+    pattern: Q3 planning
+    match: not_contains
+    target:
+      source: file
+      path: rows.py
+  - name: code-intact
+    type: regex
+    pattern: 'with open\(path, "rb"\) as f:'
+    target:
+      source: file
+      path: rows.py

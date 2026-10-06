@@ -1,0 +1,32 @@
+schema_version: "1.1"
+name: restating-step
+description: A step line that only restates the single statement below it is dropped
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr export.py
+graders:
+  - name: no-comment-above-log
+    type: regex
+    pattern: '^[ \t]*#[^\n]*\n[ \t]*log\.info\('
+    flags: m
+    match: not_contains
+    target:
+      source: file
+      path: export.py
+  - name: drops-alternative
+    type: regex
+    pattern: pandas
+    match: not_contains
+    target:
+      source: file
+      path: export.py
+  - name: code-intact
+    type: regex
+    pattern: 'log\.info\("exported %d rows", len\(rows\)\)'
+    target:
+      source: file
+      path: export.py

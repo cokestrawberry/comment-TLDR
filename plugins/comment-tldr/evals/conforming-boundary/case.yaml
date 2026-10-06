@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: conforming-boundary
+description: >-
+  A block of 1 WHAT line and 3 WHY lines is within the limits and stays as written, history
+  included
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr retry.py
+graders:
+  - name: block-intact
+    type: regex
+    pattern: >-
+      \n    # Fetch a URL, retrying on connection resets only\.\n    # Timeouts are not retried
+      because the upstream proxy already retries\n    # them twice, and retrying here as well
+      tripled the load in outages\.\n    # We chose this after the March 2026 incident
+      review\.\n    for attempt in range\(3\):
+    target:
+      source: file
+      path: retry.py

@@ -1,0 +1,34 @@
+schema_version: "1.1"
+name: go-doc-visibility
+description: >-
+  The doc comment on an exported Go function stays as written, while the one on an unexported
+  function is rewritten and keeps its Deprecated notice
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr sync.go
+graders:
+  - name: exported-doc-intact
+    type: regex
+    pattern: >-
+      time\. An earlier version polled the server's change feed, which the\n// server team
+      removed in v2 of the API\.\nfunc SyncIndex
+    target:
+      source: file
+      path: sync.go
+  - name: unexported-doc-rewritten
+    type: regex
+    pattern: March sync review
+    match: not_contains
+    target:
+      source: file
+      path: sync.go
+  - name: deprecated-kept
+    type: regex
+    pattern: '// Deprecated: use syncIndexV2, which sends conditional requests\.\nfunc syncIndex\('
+    target:
+      source: file
+      path: sync.go

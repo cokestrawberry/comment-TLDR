@@ -1,0 +1,26 @@
+schema_version: "1.1"
+name: no-invention
+description: A comment with only WHY content gains no WHAT or step lines when it is rewritten
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr limits.py
+graders:
+  # Four comment lines anywhere in the file mean a WHAT or step line was added to the 3 WHY lines.
+  - name: at-most-three-comment-lines
+    type: regex
+    pattern: '^[ \t]*#[\s\S]*?^[ \t]*#[\s\S]*?^[ \t]*#[\s\S]*?^[ \t]*#'
+    flags: m
+    match: not_contains
+    target:
+      source: file
+      path: limits.py
+  - name: keeps-constraint
+    type: regex
+    pattern: metadata
+    target:
+      source: file
+      path: limits.py

@@ -1,0 +1,38 @@
+schema_version: "1.1"
+name: license-and-docstring
+description: >-
+  A license header and a public docstring stay as written, while the comment that shares the
+  license's block is still rewritten
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr report.py
+graders:
+  - name: license-intact
+    type: regex
+    pattern: >-
+      # Copyright 2026 Example Corp\.\n# SPDX-License-Identifier: MIT\n# Permission is granted to
+      use, copy, and modify this file under the\n# terms of the MIT License; see the LICENSE file
+      for details\.\n
+    target:
+      source: file
+      path: report.py
+  - name: docstring-intact
+    type: regex
+    pattern: >-
+      rounds every total down to a whole unit so the report matches the\n    billing system,
+      which truncates fractional units\. The rounding rule\n    was settled in the 2025 billing
+      review\.\n
+    target:
+      source: file
+      path: report.py
+  - name: comment-rewritten
+    type: regex
+    pattern: escalations
+    match: not_contains
+    target:
+      source: file
+      path: report.py

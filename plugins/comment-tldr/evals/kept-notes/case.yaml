@@ -1,0 +1,45 @@
+schema_version: "1.1"
+name: kept-notes
+description: >-
+  Tag lines in a non-exported JSDoc and a TODO note stay as written while the prose around them is
+  rewritten
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr cache.js
+graders:
+  - name: param-kept
+    type: regex
+    pattern: '\* @param \{Map<string, \{atime: number\}>\} entries - The cached entries\.\n'
+    target:
+      source: file
+      path: cache.js
+  - name: returns-kept
+    type: regex
+    pattern: '\* @returns \{string\} The key of the entry to evict\.\n'
+    target:
+      source: file
+      path: cache.js
+  - name: todo-kept
+    type: regex
+    pattern: '// TODO\(cache\): switch to a heap if the cache grows past 10k entries\.\n'
+    target:
+      source: file
+      path: cache.js
+  - name: jsdoc-rewritten
+    type: regex
+    pattern: clock algorithm
+    match: not_contains
+    target:
+      source: file
+      path: cache.js
+  - name: comment-rewritten
+    type: regex
+    pattern: reverted
+    match: not_contains
+    target:
+      source: file
+      path: cache.js
