@@ -18,6 +18,22 @@ graders:
     target:
       source: file
       path: limits.py
+  # WHY can fit in 2 lines at 100 columns, so the count above misses one added line; check where
+  # the lines sit too.
+  - name: no-step-lines
+    type: regex
+    pattern: 'if size < 1:[\s\S]*#'
+    match: not_contains
+    target:
+      source: file
+      path: limits.py
+  # The first comment line stays WHY, stating the 500-item limit, instead of an added WHAT line.
+  - name: no-what-line
+    type: regex
+    pattern: 'def clamp_batch\(size\):\n[ \t]*#[^\n]*\b500\b'
+    target:
+      source: file
+      path: limits.py
   - name: keeps-constraint
     type: regex
     pattern: metadata
