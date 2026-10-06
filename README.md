@@ -28,8 +28,9 @@ The scope decides which comments are rewritten:
 - A path or glob (`src/`, `**/*.py`): the matching files.
 - A git range or commit (`main...HEAD`, `a1b2c3d`): the lines it adds or changes, compared
   against the merge base.
-- A PR number (`123`, `#123`): the lines the PR adds or changes. It works in a temporary worktree
-  and asks before committing and pushing to the PR. This scope needs the GitHub CLI (`gh`).
+- A PR (`#123`, `pr123`, `pr#123`): the lines the PR adds or changes. It works in a temporary
+  worktree and asks before committing and pushing to the PR. This scope needs the GitHub CLI
+  (`gh`). A bare number is not read as a PR, since it could be a path or a commit hash.
 
 The other scopes edit your current checkout, so start from a clean working tree: `git diff` then
 shows only the plugin's changes, and `git restore .` undoes them.
