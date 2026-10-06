@@ -1,0 +1,13 @@
+name: claude-plugin-validate
+
+on:
+  pull_request:
+
+jobs:
+  claude-plugin-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: npm install -g @anthropic-ai/claude-code@2.1.287
+      - run: claude plugin validate --strict .
+      - run: claude plugin validate --strict "$(jq -r '.plugins[].source' .claude-plugin/marketplace.json)"
