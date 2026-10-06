@@ -1,0 +1,14 @@
+{
+  "name": "comment-tldr",
+  "description": "Rewrites overly long code comments into short summaries",
+  "owner": {
+    "name": "cokestrawberry"
+  },
+  "plugins": [
+    {
+      "name": "comment-tldr",
+      "source": "./plugins/comment-tldr",
+      "description": "Summarizes overly long comment blocks in a given scope"
+    }
+  ]
+}

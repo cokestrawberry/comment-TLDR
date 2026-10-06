@@ -1,0 +1,13 @@
+{
+  "name": "comment-tldr",
+  "displayName": "comment-TLDR",
+  "description": "Rewrites overly long code comment blocks into short summaries that keep only the essential content",
+  "version": "0.1.0",
+  "author": {
+    "name": "cokestrawberry"
+  },
+  "homepage": "https://github.com/cokestrawberry/comment-TLDR",
+  "repository": "https://github.com/cokestrawberry/comment-TLDR",
+  "license": "MIT",
+  "keywords": ["comments", "summary", "code-review"]
+}
