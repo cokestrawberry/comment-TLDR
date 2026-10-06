@@ -43,6 +43,9 @@ A block of explanatory prose with 4 or more lines is a candidate. Skip:
   JSDoc, Doxygen, Go doc comments, and the like.
 - License and copyright headers.
 
+Leave TODO and FIXME notes, continuation lines included, exactly as they are. They do not count
+toward a block's length or the limits below.
+
 ## Rewrite each candidate
 
 Sort the block's content into three kinds:
