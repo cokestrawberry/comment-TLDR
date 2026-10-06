@@ -1,8 +1,8 @@
 ---
 name: comment-tldr
 description: >-
-  Rewrites overly long code comment blocks in a scope (paths, a git range, or a PR number; the
-  whole repository when omitted) into short summaries that keep only the essential content.
+  Rewrites overly long code comment blocks in a scope (paths, a git range, or a PR such as `#123`;
+  the whole repository when omitted) into short summaries that keep only the essential content.
 argument-hint: "[path | glob | git range | #PR]"
 disable-model-invocation: true
 ---
@@ -17,11 +17,11 @@ Edit the files in place and change nothing but comments.
 Read `$ARGUMENTS` as one of the following, trying them in this order:
 
 1. **Empty**: every file tracked by git in the repository (`git ls-files`).
-2. **PR** (`#123`, `pr123`, or `pr#123`): the lines the PR adds or changes
+2. **Path or glob**: every comment in the matching files.
+3. **PR** (`#123`, `pr123`, or `pr#123`): the lines the PR adds or changes
    (`gh pr diff <number>`), rewritten in a temporary worktree as described in
    [Work on a PR](#work-on-a-pr). A bare number is not a PR, since it can be a path or a commit
    hash.
-3. **Path or glob**: every comment in the matching files.
 4. **Git range or commit** (`main...HEAD`, `a1b2c3d`): the lines it adds or changes. Compare a
    range against its merge base with `git diff A...B` whether it is written with two or three
    dots, as `gh pr diff` does; use `git show <commit>` for a single commit.
