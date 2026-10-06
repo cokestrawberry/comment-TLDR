@@ -60,7 +60,9 @@ Then rewrite it within these limits:
 - Each step takes 1 line, placed directly above the code for that step.
 - Carry over only what the original comment says. Never add a WHAT, WHY, or step line it lacks: a
   comment without WHAT stays WHY-only, and steps it does not describe get no comments.
-- Drop whatever does not fit, without saving it to chat, docs, or commit messages.
+- Drop whatever does not fit, without saving it to chat, docs, or commit messages. Keep
+  constraints that cannot be read from the code first; drop alternatives that were considered and
+  the history of how the code got here first.
 - Leave a block that already meets these limits untouched, such as 1 WHAT line plus 3 WHY lines.
 - Split a block only so that each resulting block describes the code directly below it; never cut
   one explanation into consecutive chunks.
@@ -92,7 +94,8 @@ def sync_index(cache):
     # The full index is fetched every time because the server sends no
     # ETag, so there is no way to ask for only the changes. Last-Modified
     # does not help either: the server sets it to the request time, so
-    # conditional requests never hit.
+    # conditional requests never hit. We settled on this in the March sync
+    # review as the simplest option that works.
     index = fetch_index()
     changed = diff(index, cache.entries())
     cache.write(changed)
