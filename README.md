@@ -61,16 +61,19 @@ lacks is added. The skill runs only when you call it.
 
 The cases in [plugins/comment-tldr/evals](plugins/comment-tldr/evals) score the skill with
 [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals), which needs Claude Code
-v2.1.269 or later. Each case writes a fixture file with a scaffold script, runs `/comment-tldr` on
-it, and checks the rewritten file with regex graders. Every run calls the model on your account.
+v2.1.269 or later. Each case writes fixture files, some in a git repository, with a scaffold
+script, runs `/comment-tldr` on them, and checks the rewritten files with regex graders. Every run
+calls the model on your account.
 
 ```sh
 claude plugin eval plugins/comment-tldr --scaffold --ablation none --no-publish \
-  --allow-tools Edit --model claude-opus-5-5
+  --allow-tools Edit "Bash(git *)" --model claude-opus-5-5
 ```
 
-`--scaffold` runs the scaffold scripts, and `--allow-tools Edit` lets the skill rewrite the
-fixtures. `--ablation none` skips the no-plugin baseline, since `/comment-tldr` does not exist
+`--scaffold` runs the scaffold scripts, and `--allow-tools Edit "Bash(git *)"` lets the skill
+rewrite the fixtures and run git. Git runs in Claude Code's
+[sandbox](https://code.claude.com/docs/en/sandboxing), which needs `bubblewrap` and `socat` on
+Linux. `--ablation none` skips the no-plugin baseline, since `/comment-tldr` does not exist
 without the plugin. `--model` pins the model under test, so a model rollout is not mistaken for a
 skill regression. Results are written to `plugins/comment-tldr/evals/results/`.
 
