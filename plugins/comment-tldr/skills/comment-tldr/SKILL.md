@@ -37,6 +37,10 @@ time they are generated or copied.
 
 ## Find candidate blocks
 
+Only lines written in the comment syntax of the file's language are comments. Lines inside string
+literals and heredoc bodies are not, even when they start with `#`, `//`, or `*`: they are data the
+program uses, such as the text of a file a script writes.
+
 A block is one explanation, not one run of comment lines:
 
 - Comment lines with no code line between them form one block, even when blank lines or empty
