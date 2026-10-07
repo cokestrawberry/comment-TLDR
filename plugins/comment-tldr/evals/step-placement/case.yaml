@@ -1,0 +1,24 @@
+schema_version: "1.1"
+name: step-placement
+description: >-
+  Each step of a procedure described in one block moves to a line directly above that step's code
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr release.py
+graders:
+  - name: step-above-manifest
+    type: regex
+    pattern: '#[^\n]*\n[ \t]*lines = \['
+    target:
+      source: file
+      path: release.py
+  - name: step-above-archive
+    type: regex
+    pattern: '#[^\n]*\n[ \t]*with tarfile\.open\('
+    target:
+      source: file
+      path: release.py
