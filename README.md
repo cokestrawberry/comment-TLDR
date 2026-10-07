@@ -66,12 +66,13 @@ it, and checks the rewritten file with regex graders. Every run calls the model 
 
 ```sh
 claude plugin eval plugins/comment-tldr --scaffold --ablation none --no-publish \
-  --allow-tools Edit
+  --allow-tools Edit --model claude-opus-5-5
 ```
 
 `--scaffold` runs the scaffold scripts, and `--allow-tools Edit` lets the skill rewrite the
 fixtures. `--ablation none` skips the no-plugin baseline, since `/comment-tldr` does not exist
-without the plugin. Results are written to `plugins/comment-tldr/evals/results/`.
+without the plugin. `--model` pins the model under test, so a model rollout is not mistaken for a
+skill regression. Results are written to `plugins/comment-tldr/evals/results/`.
 
 The cases do not cover the PR scope, which commits and pushes to a pull request: eval runs have no
 GitHub credentials.
