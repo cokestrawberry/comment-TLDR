@@ -73,7 +73,8 @@ claude plugin eval plugins/comment-tldr --scaffold --ablation none --no-publish 
 `--scaffold` runs the scaffold scripts, and `--allow-tools Edit "Bash(git *)"` lets the skill
 rewrite the fixtures and run git. Git runs in Claude Code's
 [sandbox](https://code.claude.com/docs/en/sandboxing), which needs `bubblewrap` and `socat` on
-Linux. `--ablation none` skips the no-plugin baseline, since `/comment-tldr` does not exist
+Linux, and on Ubuntu 24.04 or later an AppArmor setting that lets bubblewrap create user
+namespaces. `--ablation none` skips the no-plugin baseline, since `/comment-tldr` does not exist
 without the plugin. `--model` pins the model under test, so a model rollout is not mistaken for a
 skill regression. Results are written to `plugins/comment-tldr/evals/results/`.
 
