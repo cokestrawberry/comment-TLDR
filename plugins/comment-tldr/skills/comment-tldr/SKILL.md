@@ -17,7 +17,8 @@ Edit the files in place and change nothing but comments.
 Read the scope the user gave when calling this skill as one of the following, trying them in this
 order:
 
-1. **Empty**: every file tracked by git in the repository (`git ls-files`).
+1. **Empty**: every file tracked by git in the repository (`git ls-files`), even when the
+   conversation has already mentioned other paths.
 2. **Path or glob**: every comment in the matching files.
 3. **PR** (`#123`, `pr123`, or `pr#123`): the lines the PR adds or changes
    (`gh pr diff <number>`), rewritten in a temporary worktree as described in
