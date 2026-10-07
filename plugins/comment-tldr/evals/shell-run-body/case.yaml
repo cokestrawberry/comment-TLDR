@@ -1,0 +1,27 @@
+schema_version: "1.1"
+name: shell-run-body
+description: >-
+  Comments inside a Dockerfile RUN heredoc and a GitHub Actions run block are shell comments and
+  are rewritten
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr Dockerfile .github/workflows/ci.yml
+graders:
+  - name: run-heredoc-rewritten
+    type: regex
+    pattern: 2025 image review
+    match: not_contains
+    target:
+      source: file
+      path: Dockerfile
+  - name: run-block-rewritten
+    type: regex
+    pattern: 2025 CI review
+    match: not_contains
+    target:
+      source: file
+      path: .github/workflows/ci.yml
