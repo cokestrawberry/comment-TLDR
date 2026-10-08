@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v7
       - run: npm install -g @anthropic-ai/claude-code@2.1.287
       - run: sudo apt-get update && sudo apt-get install -y bubblewrap socat
-      # Ubuntu 24.04's default AppArmor policy stops bubblewrap from creating user namespaces.
+      # From Ubuntu 24.04, default AppArmor policy stops bubblewrap from creating user namespaces.
       - run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - run: |
           claude plugin eval plugins/comment-tldr --scaffold --ablation none --no-publish \
