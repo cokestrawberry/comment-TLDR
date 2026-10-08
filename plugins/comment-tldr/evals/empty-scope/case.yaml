@@ -1,0 +1,39 @@
+schema_version: "1.1"
+name: empty-scope
+description: >-
+  Called without a scope, the skill rewrites the long comments in every file git tracks and leaves
+  an untracked file as written
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr
+graders:
+  - name: top-level-file-rewritten
+    type: regex
+    pattern: 2025 pricing review
+    match: not_contains
+    target:
+      source: file
+      path: server.py
+  - name: nested-file-rewritten
+    type: regex
+    pattern: 2024 operations review
+    match: not_contains
+    target:
+      source: file
+      path: tools/cleanup.py
+  # git ls-files leaves this file out, so a run that lists files without git because git cannot
+  # run rewrites it.
+  - name: untracked-intact
+    type: regex
+    pattern: >-
+      \n    # Insert all rows with a single statement\.\n    # The statement is built by hand
+      because the driver's executemany sends\n    # one round trip per row\. This was agreed in
+      the 2025 storage review\n    # after a long discussion, and it has been in place since then
+      without\n    # any reported problems\.\n    values =
+    target:
+      source: file
+      path: events.py

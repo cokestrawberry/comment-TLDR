@@ -1,0 +1,40 @@
+schema_version: "1.1"
+name: continued-explanation
+description: >-
+  A 3-line block that continues the explanation of the 3-line block above it, across code lines, is
+  rewritten together with that block
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr config.py
+graders:
+  - name: drops-history
+    type: regex
+    pattern: 2024 image review
+    match: not_contains
+    target:
+      source: file
+      path: config.py
+  # The second block explains the JSON choice, not the loop below it, so no comment stays there.
+  - name: no-comment-above-defaults
+    type: regex
+    pattern: '#[^\n]*\n[ \t]*for key, value in DEFAULTS'
+    match: not_contains
+    target:
+      source: file
+      path: config.py
+  - name: keeps-constraint
+    type: regex
+    pattern: PyYAML
+    target:
+      source: file
+      path: config.py
+  - name: code-intact
+    type: regex
+    pattern: 'for key, value in DEFAULTS\.items\(\):'
+    target:
+      source: file
+      path: config.py

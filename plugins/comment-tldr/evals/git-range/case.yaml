@@ -1,0 +1,36 @@
+schema_version: "1.1"
+name: git-range
+description: >-
+  A git range rewrites the comment its commit adds, while the comment a commit before the merge
+  base added to the same file stays as written
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr main...HEAD
+graders:
+  - name: out-of-range-intact
+    type: regex
+    pattern: >-
+      \n    # Add an item to the back of the queue\.\n    # No lock is taken because only the
+      producer thread calls this, and a\n    # lock here doubled the latency in the load test\.
+      This was agreed in\n    # the 2024 queue review after a long discussion, and it has been
+      in\n    # place since then without any reported problems\.\n    queue\.append\(item\)
+    target:
+      source: file
+      path: queue.py
+  - name: in-range-rewritten
+    type: regex
+    pattern: 2025 queue review
+    match: not_contains
+    target:
+      source: file
+      path: queue.py
+  # Only git's output has this header, so a run that guesses the range from the files under .git
+  # because git cannot run fails here.
+  - name: ran-git-diff
+    type: regex
+    pattern: 'diff --git a/queue\.py b/queue\.py'
+    target: trace

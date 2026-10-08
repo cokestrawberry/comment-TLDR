@@ -1,0 +1,62 @@
+schema_version: "1.1"
+name: c-rust-java-visibility
+description: >-
+  Doc comments on a C function that no header declares, a pub Rust function, and a protected Java
+  method stay as written, while those on a private Rust function and a private Java method are
+  rewritten
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr ring.c lib.rs Cache.java
+graders:
+  # A header declaration would be public API by convention; a non-static function that no header
+  # declares is the unclear case, which counts as public.
+  - name: c-unclear-visibility-intact
+    type: regex
+    pattern: >-
+      /\*\*\n \* Copies one record into the ring buffer and advances its head\.\n \* A full buffer
+      overwrites its oldest record instead of failing, because\n \* the producer runs in an
+      interrupt handler that cannot wait\. This was\n \* agreed in the 2024 firmware review after
+      a long discussion, and it has\n \* been in place since then without any reported
+      problems\.\n \*/\nvoid ring_push
+    target:
+      source: file
+      path: ring.c
+  - name: rust-pub-intact
+    type: regex
+    pattern: >-
+      /// Parses a duration such as `90s` or `5m` into seconds\.\n/// Only seconds and minutes
+      are accepted, because the config files this\n/// reads never used hours and accepting them
+      hid typos such as `5h` for\n/// `5m`\. This was agreed in the 2024 config review after a
+      long\n/// discussion, and it has been in place since then\.\npub fn parse_duration
+    target:
+      source: file
+      path: lib.rs
+  - name: rust-private-rewritten
+    type: regex
+    pattern: 2025 config review
+    match: not_contains
+    target:
+      source: file
+      path: lib.rs
+  - name: java-protected-intact
+    type: regex
+    pattern: >-
+      /\*\*\n     \* Removes the entries that have not been read for an hour\.\n     \*
+      Subclasses call this from their own timers, because the cache has\n     \* no thread of its
+      own and an idle cache should cost nothing\. This\n     \* was agreed in the 2024 cache
+      review after a long discussion, and it\n     \* has been in place since then without any
+      reported problems\.\n     \*/\n    protected void evictStale
+    target:
+      source: file
+      path: Cache.java
+  - name: java-private-rewritten
+    type: regex
+    pattern: 2025 cache review
+    match: not_contains
+    target:
+      source: file
+      path: Cache.java

@@ -1,0 +1,41 @@
+schema_version: "1.1"
+name: generated-and-vendor
+description: >-
+  A generated file and a file under vendor/ stay as written even when named directly, while the
+  comment in the other named file is rewritten
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr api.pb.go vendor/example.com/backoff/backoff.go client.go
+graders:
+  - name: generated-intact
+    type: regex
+    pattern: >-
+      \n// marshalHeader encodes a request header into its wire form\.\n// Fields are written in
+      tag order because the server rejects headers\n// whose tags are out of order\. This was
+      agreed in the 2024 protocol\n// review after a long discussion, and it has been in place
+      since then\n// without any reported problems\.\nfunc marshalHeader
+    target:
+      source: file
+      path: api.pb.go
+  - name: vendor-intact
+    type: regex
+    pattern: >-
+      \n// nextDelay returns the delay before the given retry attempt\.\n// The delay doubles with
+      each attempt and stops growing at 30 seconds,\n// because most servers drop idle
+      connections after 60 seconds\. This was\n// agreed in the 2024 library review after a long
+      discussion, and it has\n// been in place since then without any reported
+      problems\.\nfunc nextDelay
+    target:
+      source: file
+      path: vendor/example.com/backoff/backoff.go
+  - name: other-file-rewritten
+    type: regex
+    pattern: 2025 client review
+    match: not_contains
+    target:
+      source: file
+      path: client.go

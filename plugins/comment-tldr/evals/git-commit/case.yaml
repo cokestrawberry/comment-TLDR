@@ -1,0 +1,49 @@
+schema_version: "1.1"
+name: git-commit
+description: >-
+  A commit rewrites the comment it adds, found by its text after a later commit moved it, while the
+  comments from the commits before and after it stay as written
+context:
+  scaffold_script: fixture.sh
+execution:
+  max_turns: 30
+  timeout_seconds: 600
+  allowed_tools: [Read, Glob, Grep, Skill]
+  prompt: /comment-tldr HEAD~1
+graders:
+  - name: earlier-commit-intact
+    type: regex
+    pattern: >-
+      \n    # Return the delay in seconds before the given retry attempt\.\n    # The delay doubles
+      with each attempt and stops growing at 30 seconds,\n    # because the gateway drops idle
+      connections after 60 seconds\. This\n    # was agreed in the 2024 gateway review after a
+      long discussion, and\n    # it has been in place since then without any reported
+      problems\.\n    return min
+    target:
+      source: file
+      path: retry.py
+  # HEAD put this comment on the lines that HEAD~1's diff gives for jitter's comment, so a rewrite
+  # that follows the diff's line numbers changes this block instead.
+  - name: later-commit-intact
+    type: regex
+    pattern: >-
+      \n    # Decide whether to stop retrying a request\.\n    # Retrying stops after 5 attempts
+      or 120 seconds, whichever comes\n    # first, because the client's own timeout is 150
+      seconds\. This was\n    # agreed in the 2026 client review after a long discussion, and
+      it\n    # has been in place since then without any reported problems\.\n    return attempt
+    target:
+      source: file
+      path: retry.py
+  - name: commit-rewritten
+    type: regex
+    pattern: 2025 retry review
+    match: not_contains
+    target:
+      source: file
+      path: retry.py
+  # Only git's output has this header, so a run that guesses the commit from the files under .git
+  # because git cannot run fails here.
+  - name: ran-git-show
+    type: regex
+    pattern: 'diff --git a/retry\.py b/retry\.py'
+    target: trace
