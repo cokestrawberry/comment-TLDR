@@ -31,9 +31,9 @@ graders:
     type: regex
     pattern: >-
       \n    # Insert all rows with a single statement\.\n    # The statement is built by hand
-      because the driver's executemany sends\n    # one round trip per row\. This is a local
-      experiment that has not been\n    # committed, and it stays out of the repository until
-      the timings from\n    # the 2025 load test are compared\.\n    values =
+      because the driver's executemany sends\n    # one round trip per row\. This was agreed in
+      the 2025 storage review\n    # after a long discussion, and it has been in place since then
+      without\n    # any reported problems\.\n    values =
     target:
       source: file
-      path: scratch.py
+      path: events.py

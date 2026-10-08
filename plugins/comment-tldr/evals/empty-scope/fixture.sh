@@ -29,13 +29,13 @@ EOF
 
 git add server.py tools/cleanup.py
 
-cat > scratch.py <<'EOF'
+cat > events.py <<'EOF'
 def bulk_insert(conn, rows):
     # Insert all rows with a single statement.
     # The statement is built by hand because the driver's executemany sends
-    # one round trip per row. This is a local experiment that has not been
-    # committed, and it stays out of the repository until the timings from
-    # the 2025 load test are compared.
+    # one round trip per row. This was agreed in the 2025 storage review
+    # after a long discussion, and it has been in place since then without
+    # any reported problems.
     values = ", ".join("(?, ?)" for _ in rows)
     conn.execute(f"INSERT INTO events VALUES {values}", [v for row in rows for v in row])
 EOF
