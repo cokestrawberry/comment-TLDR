@@ -41,3 +41,9 @@ graders:
     target:
       source: file
       path: retry.py
+  # Only git's output has this header, so a run that guesses the commit from the files under .git
+  # because git cannot run fails here.
+  - name: ran-git-show
+    type: regex
+    pattern: 'diff --git a/retry\.py b/retry\.py'
+    target: trace

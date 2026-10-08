@@ -62,8 +62,8 @@ lacks is added. The skill runs only when you call it.
 The cases in [plugins/comment-tldr/evals](plugins/comment-tldr/evals) score the skill with
 [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals), which needs Claude Code
 v2.1.269 or later. Each case writes fixture files, some in a git repository, with a scaffold
-script, runs `/comment-tldr` on them, and checks the rewritten files with regex graders. Every run
-calls the model on your account.
+script, runs `/comment-tldr` on them, and checks the rewritten files, and for the git scopes the
+session trace, with regex graders. Every run calls the model on your account.
 
 ```sh
 claude plugin eval plugins/comment-tldr --scaffold --ablation none --no-publish \
@@ -77,6 +77,11 @@ Linux, and on Ubuntu 24.04 or later an AppArmor setting that lets bubblewrap cre
 namespaces. `--ablation none` skips the no-plugin baseline, since `/comment-tldr` does not exist
 without the plugin. `--model` pins the model under test, so a model rollout is not mistaken for a
 skill regression. Results are written to `plugins/comment-tldr/evals/results/`.
+
+The git range, commit, and empty-scope cases are built to fail when git cannot run in that sandbox.
+On a Mac that uses the Command Line Tools' `/usr/bin/git`, git has exited there with
+`xcode-select: Failed to locate 'git'`; the
+[eval workflow](.github/workflows/claude-plugin-eval.yml) runs the cases on Linux.
 
 The cases do not cover the PR scope, which commits and pushes to a pull request: eval runs have no
 GitHub credentials.

@@ -28,3 +28,9 @@ graders:
     target:
       source: file
       path: queue.py
+  # Only git's output has this header, so a run that guesses the range from the files under .git
+  # because git cannot run fails here.
+  - name: ran-git-diff
+    type: regex
+    pattern: 'diff --git a/queue\.py b/queue\.py'
+    target: trace

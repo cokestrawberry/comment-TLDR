@@ -1,6 +1,8 @@
 schema_version: "1.1"
 name: empty-scope
-description: Called without a scope, the skill rewrites the long comments in every tracked file
+description: >-
+  Called without a scope, the skill rewrites the long comments in every file git tracks and leaves
+  an untracked file as written
 context:
   scaffold_script: fixture.sh
 execution:
@@ -23,3 +25,15 @@ graders:
     target:
       source: file
       path: tools/cleanup.py
+  # git ls-files leaves this file out, so a run that lists files without git because git cannot
+  # run rewrites it.
+  - name: untracked-intact
+    type: regex
+    pattern: >-
+      \n    # Insert all rows with a single statement\.\n    # The statement is built by hand
+      because the driver's executemany sends\n    # one round trip per row\. This is a local
+      experiment that has not been\n    # committed, and it stays out of the repository until
+      the timings from\n    # the 2025 load test are compared\.\n    values =
+    target:
+      source: file
+      path: scratch.py
